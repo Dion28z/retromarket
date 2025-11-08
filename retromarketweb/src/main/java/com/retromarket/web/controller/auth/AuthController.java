@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 @RestController
 public class AuthController {
@@ -23,10 +24,10 @@ public class AuthController {
     GenericResponseDTO response = new GenericResponseDTO(false);
     response.setMessages(new ArrayList<>());
 
-    if (auth.getEmail().isEmpty()) {
+    if (StringUtils.hasText(auth.getEmail()) ) {
       response.getMessages().add("common.validation.missingParameter");
     }
-    if (!auth.getPassword().isEmpty()) {
+    if (StringUtils.hasText(auth.getPassword())) {
       response.getMessages().add("common.validation.missingParameter");
     }
 
@@ -34,7 +35,12 @@ public class AuthController {
       return response;
     }
 
-    final GenericResponseData authentication = this.authFacade.authenticate(auth.getUsername(),auth.getEmail(), auth.getPassword());
+    final GenericResponseData authentication = this.authFacade.authenticate(
+        auth.getUsername(),
+        auth.getEmail(),
+        auth.getPassword()
+    );
+
     response.setResult(authentication.getResult());
 
     if (authentication.getResult())

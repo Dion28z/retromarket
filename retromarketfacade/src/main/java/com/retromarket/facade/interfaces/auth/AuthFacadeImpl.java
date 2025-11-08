@@ -46,7 +46,7 @@ public class AuthFacadeImpl implements AuthFacade {
       return commonResponseData;
     }
 
-    if (user.getStatus() == UserStatus.INACTIVE) {
+    if (Objects.nonNull(user.getStatus()) && user.getStatus() == UserStatus.INACTIVE) {
       commonResponseData.setMessage("auth.account.disabled");
       return commonResponseData;
     }

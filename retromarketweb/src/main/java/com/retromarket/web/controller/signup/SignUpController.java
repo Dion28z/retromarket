@@ -40,7 +40,7 @@ public class SignUpController {
         userRegistration.getEmail(),
         userRegistration.getPhone()
     );
-    if (!uniqueDataValidation.getMessage().isEmpty()) {
+    if (StringUtils.hasText(uniqueDataValidation.getMessage())) {
       response.getMessages().add(uniqueDataValidation.getMessage());
       return response;
     }

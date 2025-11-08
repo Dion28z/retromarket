@@ -6,6 +6,7 @@ import com.retromarket.core.service.user.UserCredentialService;
 import com.retromarket.core.service.user.UserService;
 import com.retromarket.facade.model.common.GenericResponseData;
 import com.retromarket.facade.model.user.UserData;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,16 +63,10 @@ public class UserFacadeImpl implements UserFacade {
 
   public GenericResponseData register(final UserData userData, final String password) {
     final GenericResponseData commonResponseData = new GenericResponseData();
-    final User userRegistration = new User();
+    final User newUser = new User();
     commonResponseData.setResult(false);
-    userRegistration.setEmail(userData.getEmail());
-    userRegistration.setFirstName(userData.getFirstName());
-    userRegistration.setSecondLastName(userData.getSecondLastName());
-    userRegistration.setLastName(userData.getLastName());
-    userRegistration.setSecondLastName(userData.getSecondLastName());
-    userRegistration.setPhone(userData.getPhone());
-    userRegistration.setGender(userData.getGender());
-    final User user = userService.register(userRegistration);
+    BeanUtils.copyProperties(userData, newUser);
+    final User user = userService.register(newUser);
 
     if (Objects.isNull(user)) {
       commonResponseData.setMessage("user.register.error");
