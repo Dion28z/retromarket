@@ -1,4 +1,4 @@
-package com.retromarket.facade.model.user;
+package com.retromarket.web.model.user;
 
 import java.util.Date;
 

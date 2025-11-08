@@ -11,6 +11,7 @@ import com.retromarket.core.repository.user.UserCredentialRepository;
 @Service
 public class UserCredentialServiceImpl implements UserCredentialService {
 
+  @Autowired
   private UserCredentialRepository userCredentialRepository;
 
   public UserCredential getUserCredential(final String userId) {

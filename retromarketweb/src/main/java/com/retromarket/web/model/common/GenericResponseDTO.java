@@ -1,12 +1,15 @@
-package com.retromarket.facade.model.common;
+package com.retromarket.web.model.common;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenericResponseDTO {
 
   private Boolean result;
-  private String message;
+  private List<String> messages;
   private Object data;
 
   private String exception;
@@ -21,14 +24,6 @@ public class GenericResponseDTO {
 
   public void setResult(Boolean result) {
     this.result = result;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
   }
 
   public Object getData() {
@@ -47,4 +42,11 @@ public class GenericResponseDTO {
     this.exception = exception;
   }
 
+  public List<String> getMessages() {
+    return messages;
+  }
+
+  public void setMessages(List<String> messages) {
+    this.messages = messages;
+  }
 }

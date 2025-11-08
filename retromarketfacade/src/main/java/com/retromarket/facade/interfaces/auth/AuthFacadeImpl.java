@@ -7,7 +7,8 @@ import com.retromarket.core.service.auth.AuthService;
 import com.retromarket.core.service.jwt.JwtService;
 import com.retromarket.core.service.user.UserCredentialService;
 import com.retromarket.core.service.user.UserService;
-import com.retromarket.facade.model.common.MessageResultDTO;
+import com.retromarket.facade.model.common.GenericResponseData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -16,15 +17,22 @@ import java.util.Objects;
 @Service
 public class AuthFacadeImpl implements AuthFacade {
 
+  @Autowired
   private AuthService authService;
+
+  @Autowired
   private UserService userService;
+
+  @Autowired
   private JwtService jwtService;
+
+  @Autowired
   private UserCredentialService credentialService;
 
 
-  public MessageResultDTO authenticate(final String username, String email, final String password) {
-    MessageResultDTO result = new MessageResultDTO();
-    result.setResult(false);
+  public GenericResponseData authenticate(final String username, String email, final String password) {
+    GenericResponseData commonResponseData = new GenericResponseData();
+    commonResponseData.setResult(false);
     User user = null;
 
     if (StringUtils.hasText(username)) {
@@ -34,29 +42,29 @@ public class AuthFacadeImpl implements AuthFacade {
     }
 
     if (Objects.isNull(user)) {
-      result.setMessage("auth.account.notfound");
-      return result;
+      commonResponseData.setMessage("auth.account.notfound");
+      return commonResponseData;
     }
 
     if (user.getStatus() == UserStatus.INACTIVE) {
-      result.setMessage("auth.account.disabled");
-      return result;
+      commonResponseData.setMessage("auth.account.disabled");
+      return commonResponseData;
     }
 
     final UserCredential credential = this.credentialService.getUserCredential((user.getId()));
     if (Objects.isNull(credential)) {
-      result.setMessage("auth.credential.notfound");
-      return result;
+      commonResponseData.setMessage("auth.credential.notfound");
+      return commonResponseData;
     }
 
     final Boolean authenticated = this.authService.authenticate(credential.getPassword(), password);
     if (!authenticated) {
-      result.setMessage("auth.credential.incorrect");
-      return result;
+      commonResponseData.setMessage("auth.credential.incorrect");
+      return commonResponseData;
     }
     final String token = this.jwtService.generate(username);
-    result.setMessage(token);
-    result.setResult(true);
-    return result;
+    commonResponseData.setData(token);
+    commonResponseData.setResult(true);
+    return commonResponseData;
   }
 }

@@ -1,4 +1,4 @@
-package com.retromarket.facade.model.auth;
+package com.retromarket.web.model.auth;
 
 public class AuthenticationDTO {
   private String email;

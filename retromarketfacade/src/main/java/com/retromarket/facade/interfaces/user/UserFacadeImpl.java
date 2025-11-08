@@ -4,8 +4,9 @@ import com.retromarket.core.model.user.User;
 import com.retromarket.core.service.jwt.JwtService;
 import com.retromarket.core.service.user.UserCredentialService;
 import com.retromarket.core.service.user.UserService;
-import com.retromarket.facade.model.common.MessageResultDTO;
-import com.retromarket.facade.model.user.UserRegistrationDTO;
+import com.retromarket.facade.model.common.GenericResponseData;
+import com.retromarket.facade.model.user.UserData;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -13,68 +14,74 @@ import java.util.Objects;
 @Service
 public class UserFacadeImpl implements UserFacade {
 
+  @Autowired
   private UserService userService;
+
+  @Autowired
   private JwtService jwtService;
+
+  @Autowired
   private UserCredentialService credentialService;
 
   public User findByUsername(final String username) {
-    return this.userService.findByUsername(username);
+    return userService.findByUsername(username);
   }
 
   public User findByEmail(final String email) {
-    return this.userService.findByEmail(email);
+    return userService.findByEmail(email);
   }
 
   public User findByPhone(final String phone) {
-    return this.userService.findByPhone(phone);
+    return userService.findByPhone(phone);
   }
 
-  public MessageResultDTO validateUniqueData(final String username, final String email, final String phone) {
-    final MessageResultDTO messageResult = new MessageResultDTO();
-    messageResult.setResult(false);
+  public GenericResponseData validateUniqueData(final String username, final String email, final String phone) {
+    final GenericResponseData commonResponseData = new GenericResponseData();
+    commonResponseData.setResult(false);
 
-    final User usernameTaken = this.findByUsername(username);
+    final User usernameTaken = findByUsername(username);
     if (Objects.nonNull(usernameTaken)) {
-      messageResult.setMessage("user.usernameTaken");
-      return messageResult;
+      commonResponseData.setMessage("user.usernameTaken");
+      return commonResponseData;
     }
 
-    final User emailTaken = this.findByEmail(email);
+    final User emailTaken = findByEmail(email);
     if (Objects.nonNull(emailTaken)) {
-      messageResult.setMessage("user.emailTaken");
-      return messageResult;
+      commonResponseData.setMessage("user.emailTaken");
+      return commonResponseData;
     }
-    final User phoneTaken = this.findByPhone(phone);
+    final User phoneTaken = findByPhone(phone);
     if (Objects.nonNull(phoneTaken)) {
-      messageResult.setMessage("user.phoneTaken");
-      return messageResult;
+      commonResponseData.setMessage("user.phoneTaken");
+      return commonResponseData;
     }
 
-    messageResult.setResult(true);
-    return messageResult;
+    commonResponseData.setResult(true);
+    return commonResponseData;
   }
 
-  public MessageResultDTO register(final UserRegistrationDTO signUp) {
-    final MessageResultDTO messageResult = new MessageResultDTO();
+  public GenericResponseData register(final UserData userData, final String password) {
+    final GenericResponseData commonResponseData = new GenericResponseData();
     final User userRegistration = new User();
-    messageResult.setResult(false);
-    userRegistration.setEmail(signUp.getEmail());
-    userRegistration.setFirstName(signUp.getFirstName());
-    userRegistration.setSecondLastName(signUp.getSecondLastName());
-    userRegistration.setLastName(signUp.getLastName());
-    userRegistration.setSecondLastName(signUp.getSecondLastName());
-    userRegistration.setPhone(signUp.getPhone());
-    userRegistration.setGender(signUp.getGender());
-    final User user = this.userService.register(userRegistration);
+    commonResponseData.setResult(false);
+    userRegistration.setEmail(userData.getEmail());
+    userRegistration.setFirstName(userData.getFirstName());
+    userRegistration.setSecondLastName(userData.getSecondLastName());
+    userRegistration.setLastName(userData.getLastName());
+    userRegistration.setSecondLastName(userData.getSecondLastName());
+    userRegistration.setPhone(userData.getPhone());
+    userRegistration.setGender(userData.getGender());
+    final User user = userService.register(userRegistration);
 
     if (Objects.isNull(user)) {
-      messageResult.setMessage("user.register.error");
-      return messageResult;
+      commonResponseData.setMessage("user.register.error");
+      return commonResponseData;
     }
 
-    this.credentialService.create(user.getId(), signUp.getPassword());
-    final String token = this.jwtService.generate(user.getUsername());
-    return messageResult;
+    credentialService.create(user.getId(), password);
+    final String token = jwtService.generate(user.getUsername());
+    commonResponseData.setData(token);
+    commonResponseData.setResult(true);
+    return commonResponseData;
   }
-
 }

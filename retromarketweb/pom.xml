@@ -29,6 +29,12 @@
     </dependency>
 
     <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>3.0-rc5</version>
+    </dependency>
+
+    <dependency>
       <groupId>com.retromarket</groupId>
       <artifactId>retromarketfacade</artifactId>
       <version>0.0.1-SNAPSHOT</version>
